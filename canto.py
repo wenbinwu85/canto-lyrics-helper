@@ -6,16 +6,21 @@ import webbrowser
 import requests
 from bs4 import BeautifulSoup
 
-songs = ['龍舌蘭', '體面', '突然好想你']
+song = '龍舌蘭'
 
 def search_dictionary(characters):
     dictionary = json.load(open('./data/characters.json'))
+    result = ''
     for character in characters:
-        jyutping = dictionary[character]
-        print(f'{character}', end=' ')
-        for i in jyutping:
-            print(i, end=' ')
-    print()
+        try:
+            jyutping = dictionary[character]
+            result += character
+            for i in jyutping:
+                result += i
+        except KeyError:
+            continue
+        result += ' '
+    return result
 
 
 def search_words(character):
@@ -32,9 +37,10 @@ def search_words(character):
 def search_homonyms(sound):
     homonyms = json.load(open('./data/homonyms.json'))
     print(f'{sound} 同音字:')
-    for character in homonyms[sound]:
-        print(character, end=' ')
-    print()
+    for k, v, in homonyms.items():
+        if sound in k:
+            print(k + ' : ', ' '.join(v))
+    return None
 
 
 def make_soup(url):
@@ -54,9 +60,10 @@ def parse_song_id(song):
     return None
 
 
-def fetch_lyrics(id):
+def fetch_lyrics(song):
     cleaned_lyrics = ''
-    soup = make_soup(f'http://mojim.com{id}')
+    song_id = parse_song_id(song)
+    soup = make_soup(f'http://mojim.com{song_id}')
     lyrics = soup.find('dl', {'id': 'fsZx1'})
     lyrics = [str(line) for line in lyrics.contents]
 
@@ -73,16 +80,18 @@ def fetch_lyrics(id):
     print(song + ' lyrics saved.')
 
 
-if __name__ == "__main__":
-    # example use
-    # search_dictionary('笨')
-    # print()
-    # search_dictionary('你好世界')
-    # print()
-    # search_homonyms('paang4')
-    # print()
-    # search_words('飛')
+def get_jyutpin(song):
+    marked_lyrics = ''
+    with open(song + '.txt', 'r') as fin:
+        for line in fin:
+            marked_line = search_dictionary(line)
+            marked_lyrics += marked_line + '\n'
+    
+    with open(song + '2.txt', 'w') as fout:
+        fout.write(marked_lyrics)
 
-    for song in songs:
-        song_id = parse_song_id(song)
-        fetch_lyrics(song_id)
+
+if __name__ == "__main__":
+    search_homonyms('aa2')
+    fetch_lyrics(song)
+    get_jyutpin(song)
