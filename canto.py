@@ -6,6 +6,7 @@ import webbrowser
 import requests
 from bs4 import BeautifulSoup
 
+songs = ['龍舌蘭', '體面', '突然好想你']
 
 def search_dictionary(characters):
     dictionary = json.load(open('./data/characters.json'))
@@ -36,12 +37,15 @@ def search_homonyms(sound):
     print()
 
 
-def parse_song_id(song):
-    search_url = f'https://mojim.com/{song}.html?t3'
-    resp = requests.get(search_url).text
+def make_soup(url):
+    resp = requests.get(url).text
     soup = BeautifulSoup(resp, 'html5lib')
-    spans = soup.findAll('span', {'class': 'mxsh_ss4'})
+    return soup
 
+
+def parse_song_id(song):
+    soup = make_soup(f'https://mojim.com/{song}.html?t3')
+    spans = soup.findAll('span', {'class': 'mxsh_ss4'})
     pattern = re.compile(r"(.*?) ")
     for s in spans:
         link = s.find('a', {'title': pattern})
@@ -51,15 +55,30 @@ def parse_song_id(song):
 
 
 def save_lyrics(id):
-    url = f'http://mojim.com{id}'
-    res = requests.get(url).text
-    soup = BeautifulSoup(res, 'html5lib')
+    soup = make_soup(f'http://mojim.com{id}')
     lyrics = soup.find('dl', {'id': 'fsZx1'})
-    ad = '更多更詳盡歌詞 在 ※ Mojim.com　魔鏡歌詞網'
-
     with open(song + '.htm', 'w', encoding='utf-8') as fout:
-        fout.write(lyrics.prettify().replace(ad, ''))
-    webbrowser.open('file://' + os.path.realpath(song + '.htm'))
+        fout.write(lyrics.prettify())
+    print(song + ' lyrics saved.')
+
+
+def clean_lyrics(song):
+    cleaned_lyrics = ''
+    with open(song + '.htm') as lyrics:
+        for line in lyrics:
+            if 'br' in line:
+                line = '\n'
+            elif ('Mojim.com' in line) or ('[' in line) or ('<' in line):
+                continue
+            cleaned_lyrics += line
+
+    cleaned_lyrics = cleaned_lyrics.replace('\n\n', '\n')
+    cleaned_lyrics = cleaned_lyrics.strip()
+
+    with open(song + '.txt', 'w') as fout:
+        for line in cleaned_lyrics:
+            fout.write(line)
+    print('lyrics is clean!')
 
 
 if __name__ == "__main__":
@@ -72,7 +91,7 @@ if __name__ == "__main__":
     # print()
     # search_words('飛')
 
-    song = '其實其實'
-    song_id = parse_song_id(song)
-    save_lyrics(song_id)
-    print(song + ' lyrics saved.')
+    for song in songs:
+        song_id = parse_song_id(song)
+        save_lyrics(song_id)
+        clean_lyrics(song)
