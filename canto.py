@@ -58,24 +58,19 @@ def fetch_lyrics(id):
     cleaned_lyrics = ''
     soup = make_soup(f'http://mojim.com{id}')
     lyrics = soup.find('dl', {'id': 'fsZx1'})
-    with open(song + '.txt', 'w') as fout:
-        fout.write(lyrics.prettify())
+    lyrics = [str(line) for line in lyrics.contents]
 
-    with open(song + '.txt') as lyrics:
-        for line in lyrics:
-            if 'br' in line:
-                line = '\n'
-            elif ('Mojim.com' in line) or ('[' in line) or ('<' in line):
-                continue
-            cleaned_lyrics += line
+    for i in lyrics:
+        if 'br' in i:
+            i = '\n'
+        if '[' in i or '<' in i or 'Mojim' in i:
+            continue
+        cleaned_lyrics += i
 
-    cleaned_lyrics = cleaned_lyrics.replace('\n\n', '\n')
     cleaned_lyrics = cleaned_lyrics.strip()
-
     with open(song + '.txt', 'w') as fout:
-        for line in cleaned_lyrics:
-            fout.write(line)
-    print(song + 'lyrics saved!')
+        fout.write(cleaned_lyrics)
+    print(song + ' lyrics saved.')
 
 
 if __name__ == "__main__":
