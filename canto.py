@@ -54,17 +54,14 @@ def parse_song_id(song):
     return None
 
 
-def save_lyrics(id):
+def fetch_lyrics(id):
+    cleaned_lyrics = ''
     soup = make_soup(f'http://mojim.com{id}')
     lyrics = soup.find('dl', {'id': 'fsZx1'})
-    with open(song + '.htm', 'w', encoding='utf-8') as fout:
+    with open(song + '.txt', 'w') as fout:
         fout.write(lyrics.prettify())
-    print(song + ' lyrics saved.')
 
-
-def clean_lyrics(song):
-    cleaned_lyrics = ''
-    with open(song + '.htm') as lyrics:
+    with open(song + '.txt') as lyrics:
         for line in lyrics:
             if 'br' in line:
                 line = '\n'
@@ -78,7 +75,7 @@ def clean_lyrics(song):
     with open(song + '.txt', 'w') as fout:
         for line in cleaned_lyrics:
             fout.write(line)
-    print('lyrics is clean!')
+    print(song + 'lyrics saved!')
 
 
 if __name__ == "__main__":
@@ -93,5 +90,4 @@ if __name__ == "__main__":
 
     for song in songs:
         song_id = parse_song_id(song)
-        save_lyrics(song_id)
-        clean_lyrics(song)
+        fetch_lyrics(song_id)
