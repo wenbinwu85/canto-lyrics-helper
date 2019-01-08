@@ -131,6 +131,7 @@ def fetch_lyrics(song):
 def mark_lyrics(song):
     """
     mark each word in the lyrics with jyutpin
+    output: song_name_marked.txt
     """
 
     marked_lyrics = ''
