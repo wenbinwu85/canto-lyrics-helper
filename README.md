@@ -7,11 +7,11 @@ Requirements:
 - BeautifulSoup4
 
 Functions:
-- Character dictionary for searching jyutpin of characters (tradtioncal Chinese characters)
+- Character dictionary for searching jyutping of characters (tradtioncal Chinese characters)
 - Chinese words dictionary with way to many words lol (tradtioncal / simplified Chinese characters)
 - Homonyms dictionary
 - Fetch and save lyrics from Mojim.com (song names in traditional Chinese characters)
-- Mark lyrics with jyutpin
+- Mark lyrics with jyutping
 
 Data:
 - Character dictionary: 15080 characters
