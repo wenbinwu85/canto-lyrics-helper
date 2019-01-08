@@ -19,7 +19,7 @@ Data:
 - Homonyms dictionary: 1893 entries
 
 Note:
-Dictiontary data are found from the web.
+- Dictiontary data are found from the web.
 
 TODO:
 - maybe remove some useless words from words dictionary, it includes many names of people and such.
