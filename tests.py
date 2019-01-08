@@ -3,11 +3,20 @@ from canto import *
 
 print('--- search jyutping ---')
 print('single character search: ')
-print(search_jyutping('笨'))
+print(search('笨','jyutpings'))
 print('multi cahracter search: ') 
-print(search_jyutping('你好世界'))
+print(search('你好世界', 'jyutpings'))
 print('failed search:')
-print(search_jyutping('xyz'))
+print(search('xyz', 'jyutpings'))
+print()
+
+print('--- search tones ---')
+print('single character search: ')
+print(search('笨', 'tones'))
+print('multi cahracter search: ') 
+print(search('你好世界', 'tones'))
+print('failed search:')
+print(search('xyz', 'tones'))
 print()
 
 print('--- search words ---')

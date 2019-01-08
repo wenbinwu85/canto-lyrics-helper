@@ -7,13 +7,15 @@ from bs4 import BeautifulSoup
 song = '龍舌蘭'
 
 
-def search_jyutping(characters):
+def search(characters, attribute='jyutpings'):
     """
-    return jyutping for one or more traditional chinese characters
-    example usage:
-        search_jyutping('笨')
-        search_jyutping('你好世界')
+    return jyutpings or tones for each character
+    example usages:
+        search('笨', 'jyutpings')
+        search('你好世界', 'tones')
     """
+    if not attribute in ('jyutpings', 'tones'):
+        raise AttributeError('can only search for "jyutpings" or "tones".')
 
     dictionary = json.load(open('./data/characters.json'))
     result = ''
@@ -22,9 +24,9 @@ def search_jyutping(characters):
         return ''
     for character in characters:
         try:
-            jyutpings = dictionary[character]['jyutpings']
-            jyutpings = ' '.join(jyutpings)
-            result += ' '.join((character, jyutpings))
+            data = dictionary[character][attribute]
+            data = ' '.join(data)
+            result += ' '.join((character, data))
         except KeyError:
             continue
         result += ' '
@@ -139,7 +141,7 @@ def mark_lyrics(song):
     try:
         with open(song + '.txt', 'r') as fin:
             for line in fin:
-                marked_line = search_jyutping(line)
+                marked_line = search(line, 'tones')
                 marked_lyrics += marked_line + '\n'
     except FileNotFoundError:
         print(f'{song}.txt. does not exist!')
