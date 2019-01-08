@@ -14,9 +14,9 @@ Functions:
 - Mark lyrics with jyutpin
 
 Data:
-Character dictionary: 15080 characters
-Words dictinary: 919783 words
-Homonyms dictionary: 1893 entries
+- Character dictionary: 15080 characters
+- Words dictinary: 919783 words
+- Homonyms dictionary: 1893 entries
 
 Note:
 Dictiontary data are found from the web.
