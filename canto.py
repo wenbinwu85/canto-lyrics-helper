@@ -7,12 +7,12 @@ from bs4 import BeautifulSoup
 song = '龍舌蘭'
 
 
-def search_jyutpin(characters):
+def search_jyutping(characters):
     """
-    return jyutpin for one or more traditional chinese characters
+    return jyutping for one or more traditional chinese characters
     example usage:
-        search_jyutpin('笨')
-        search_jyutpin('你好世界')
+        search_jyutping('笨')
+        search_jyutping('你好世界')
     """
 
     dictionary = json.load(open('./data/characters.json'))
@@ -22,8 +22,8 @@ def search_jyutpin(characters):
         return ''
     for character in characters:
         try:
-            jyutpin = dictionary[character]
-            result += character + ' ' + ' '.join(jyutpin)
+            jyutping = dictionary[character]
+            result += character + ' ' + ' '.join(jyutping)
         except KeyError:
             continue
         result += ' '
@@ -52,9 +52,9 @@ def search_words(character):
     return result
 
 
-def search_homonyms(jyutpin):
+def search_homonyms(jyutping):
     """
-    return homonym characters for the jyutpin sound, input can be partial or whole jyutpin
+    return homonym characters for the jyutping sound, input can be partial or whole jyutping
     example usage:
         search_homonyms('baang2')
         search_homonyms('aang')
@@ -63,7 +63,7 @@ def search_homonyms(jyutpin):
     homonyms = json.load(open('./data/homonyms.json'))
     result = ''
     for k, v, in homonyms.items():
-        if jyutpin in k:
+        if jyutping in k:
             result += k + ' : ' + ' '.join(v) + '\n'
     if not result:
         print('no homonyms found!')
@@ -130,7 +130,7 @@ def fetch_lyrics(song):
 
 def mark_lyrics(song):
     """
-    mark each word in the lyrics with jyutpin
+    mark each word in the lyrics with jyutping
     output: song_name_marked.txt
     """
 
@@ -138,7 +138,7 @@ def mark_lyrics(song):
     try:
         with open(song + '.txt', 'r') as fin:
             for line in fin:
-                marked_line = search_jyutpin(line)
+                marked_line = search_jyutping(line)
                 marked_lyrics += marked_line + '\n'
     except FileNotFoundError:
         print(f'{song}.txt. does not exist!')
@@ -146,19 +146,19 @@ def mark_lyrics(song):
     
     with open(song + '_marked.txt', 'w') as fout:
         fout.write(marked_lyrics)
-    print(f'{song} lyrics is marked with jyutpin.')
+    print(f'{song} lyrics is marked with jyutping.')
     return None
 
 
 if __name__ == "__main__":
     # tests
-    print('--- search jyutpin ---')
+    print('--- search jyutping ---')
     print('single character search: ')
-    print(search_jyutpin('笨'))
+    print(search_jyutping('笨'))
     print('multi cahracter search: ') 
-    print(search_jyutpin('你好世界'))
+    print(search_jyutping('你好世界'))
     print('failed search:')
-    print(search_jyutpin('xyz'))
+    print(search_jyutping('xyz'))
     print()
 
     print('--- search words ---')
