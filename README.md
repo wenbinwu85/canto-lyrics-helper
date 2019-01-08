@@ -1,10 +1,12 @@
 # cantonese-lyrics-helper
-I wrote this to help me write cantonese song lyrics. Includes jyutping dictionary and words search. WIP.
+I wrote this to help me write cantonese song lyrics.
 
-features:
-- character dictionary with jyutpin
-- words dictionary with way to many words lol
-- homonyns dictionary to look for characters with the same sound
-- fetch and save lyrics from Mojim.com
+functions:
+- character dictionary for searching jyutpin of characters (tradtioncal chinese characters)
+- chinese words dictionary with way to many words lol (tradtioncal / simplified chinese characters)
+- homonyns dictionary
+- fetch and save lyrics from Mojim.com (song names in traditional chinese characters)
+- mark lyrics with jyutpin
 
-not finished, still work in progress.
+note:
+diciontary data are found on the web.
