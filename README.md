@@ -8,7 +8,7 @@ Requirements:
 
 Functions:
 - Character dictionary for searching jyutping of characters (tradtioncal Chinese characters)
-- Chinese words dictionary with way to many words lol (tradtioncal / simplified Chinese characters)
+- Chinese words dictionaries. tradtioncal / simplified / chengyu included.
 - Homonyms dictionary
 - Fetch and save lyrics from Mojim.com (song names in traditional Chinese characters)
 - Mark lyrics with jyutping
@@ -31,6 +31,7 @@ TODO:
 ---------------------------------------------
 
 廣東歌詞助手
+
 最近迷上寫歌詞，發現寫廣東歌詞真的很難， 所以些了個助手幫忙。
 
 主要功能：
@@ -56,6 +57,7 @@ TODO:
 ---------------------------------------------
 
 广东歌词助手
+
 最近迷上写歌词，发现写广东歌词真的很难， 所以些了个助手帮忙。
 
 主要功能：
