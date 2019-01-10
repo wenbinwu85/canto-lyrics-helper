@@ -36,15 +36,25 @@ def search(characters, attribute='jyutpings'):
     return result
 
 
-def search_words(character):
+def search_words(character, dictionary='fanti'):
     """
     return words that contain a specific character
     example usage:
-        search_words('笨')
+        search_words('笨', 'jianti')
+        search_words('蛋', 'fanti')
     """
 
+    if dictionary == 'fanti':
+        file = './data/traditional.txt'
+    elif dictionary == 'jianti':
+        file = './data/simplified.txt'
+    elif dictionary == 'chengyu':
+        file = './data/chengyu.txt'
+    else:
+        raise AttributeError('No such dictionary!')
+
     result = []
-    with open('./data/dictionary.txt') as wordlist:
+    with open(file) as wordlist:
         for word in wordlist:
             if character in word:
                 result.append(word.strip('\n'))
@@ -156,3 +166,5 @@ def mark_lyrics(song):
 if __name__ == "__main__":
     print('cantonese lyrics helper')
     print('by wenbin wu')
+
+    fetch_lyrics(song)

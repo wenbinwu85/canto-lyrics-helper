@@ -15,15 +15,18 @@ Functions:
 
 Data:
 - Character dictionary: 15080 characters
-- Words dictinary: 919783 words
+- Words dictinary: 
+    - simplified 800876 entries
+    - traditional 978719 entries
+    - chengyu 49453 entreis
 - Homonyms dictionary: 1893 entries
 
 Note:
 - Dictiontary data are found from the web.
 
 TODO:
-- maybe remove some useless words from words dictionary, it includes many names of people and such.
-- add more functions
+
+- add more functions maybe
 
 ---------------------------------------------
 
@@ -43,9 +46,12 @@ TODO:
 - BeautifulSoup4
 
 字典：
-粵拼字典: 15080 字
-中文詞典: 919783 詞
-同音字: 1893 聲母/聲韻/聲調 組合
+- 粵拼字典: 15080 字
+- 中文詞典: 
+    - 簡體 800876 
+    - 繁體 978719 
+    - 成語 49453
+- 同音字: 1893 聲母/聲韻/聲調 組合
 
 ---------------------------------------------
 
@@ -65,6 +71,9 @@ TODO:
 - BeautifulSoup4
 
 字典：
-粤拼字典: 15080 字
-中文词典: 919783 词
-同音字: 1893 声母/声韵/声调 组合
+- 粤拼字典: 15080 字
+- 中文词典: 
+    - 简体 800876 
+    - 繁体 978719 
+    - 成语 49453
+- 同音字: 1893 声母/声韵/声调 组合
