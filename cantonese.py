@@ -85,7 +85,8 @@ def homonyms_by_word(word):
     return None
 
 def homonyms_by_tones(tones):
-    result = [w.strip('\n') for w in words_dict if tones in Word(w.strip('\n')).tones]
+    words_pool = [w.strip('\n') for w in words_dict if len(w)-1 == len(tones)]
+    result = [w.strip('\n') for w in words_pool if tones in Word(w.strip('\n')).tones]
 
     with open('homonyms_by_tones.txt', 'w', encoding='utf-8') as fout:
         fout.write(' '.join(result))
@@ -94,4 +95,4 @@ def homonyms_by_tones(tones):
 
 if __name__ == '__main__':
     homonyms_by_tones('33')
-    # homonyms_by_word('老母')
+    homonyms_by_word('老母')
