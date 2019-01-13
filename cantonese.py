@@ -65,16 +65,33 @@ class Word:
         result = {c.character: c.jyutpings() for c in self.chars}
         return result
 
-    def homonyms(self):
-        result = {}
-        words_pool = [w.strip('\n') for w in words_dict if len(w)-1 == len(self.word)]
-        for t in self.tones:
-            matched_words = []
-            for w in words_pool:
-                try:
-                    if t in Word(w).tones:
-                        matched_words.append(w)
-                except ValueError:
-                    continue
-            result[t] = matched_words
-        return result
+
+def homonyms_by_word(word):
+    words_pool = [w.strip('\n') for w in words_dict if len(w)-1 == len(word)]
+    word_obj = Word(word)
+    result = {}
+
+    for t in word_obj.tones:
+        matched_words = []
+        for w in words_pool:
+            if t in Word(w).tones:
+                matched_words.append(w)
+        result[t] = matched_words
+
+    with open('homonyms_by_words.txt', 'w', encoding='utf-8') as fout:
+        for i in result:
+            fout.write(i + '\n' + ' '.join(result[i]) + '\n')
+        print('file saved.')
+    return None
+
+def homonyms_by_tones(tones):
+    result = [w.strip('\n') for w in words_dict if tones in Word(w.strip('\n')).tones]
+
+    with open('homonyms_by_tones.txt', 'w', encoding='utf-8') as fout:
+        fout.write(' '.join(result))
+        print('file saved.')
+    return None
+
+if __name__ == '__main__':
+    homonyms_by_tones('33')
+    # homonyms_by_word('老母')

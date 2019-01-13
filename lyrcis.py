@@ -4,7 +4,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
-song = '龍舌蘭'
+song = '你是我的'
 
 def make_soup(url):
     """
