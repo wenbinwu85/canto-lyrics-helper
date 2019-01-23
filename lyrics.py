@@ -70,12 +70,11 @@ def search_mojim(query, param):
     """
     search query on mojim.com and open the result page in a broswer
     """
-    mojim_url = 'https://mojim.com/'
     url_dict = {
-        'artist': mojim_url + query + '.html?t1',
-        'album': mojim_url + query + '.html?t2',
-        'song': mojim_url + query + '.html?t3',
-        'lyrics': mojim_url + query + '.html?t4',
+        'artist': f'https://mojim.com/{query}.html?t1',
+        'album': f'https://mojim.com/{query}.html?t2',
+        'song': f'https://mojim.com/{query}.html?t3',
+        'lyrics': f'https://mojim.com/{query}.html?t4',
     }
     try:
         url = url_dict[param]

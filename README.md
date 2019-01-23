@@ -5,6 +5,7 @@ Requirements:
 - Python3.6 or above. Because I like f strings :)
 - Requests
 - BeautifulSoup4
+- html5lib
 
 Functions:
 - Character dictionary for searching jyutping of characters (tradtioncal Chinese characters)
@@ -45,6 +46,7 @@ TODO:
 - Python 3.6
 - Requests
 - BeautifulSoup4
+- html5lib 
 
 字典：
 - 粵拼字典
@@ -71,6 +73,7 @@ TODO:
 - Python 3.6
 - Requests
 - BeautifulSoup4
+- html5lib
 
 字典：
 - 粤拼字典
