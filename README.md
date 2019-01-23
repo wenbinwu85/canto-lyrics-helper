@@ -12,7 +12,7 @@ Functions:
 - Chinese words dictionaries. tradtioncal / simplified / chengyu included.
 - Homophones dictionary
 - Find and save lyrics from Mojim.com (song names in traditional Chinese characters)
-
+- save all lyrics from an artist page from mojim.com
 
 Data:
 - Character dictionary:
@@ -40,7 +40,6 @@ TODO:
 - 中文詞典
 - 同音字搜查
 - 從 Mojim.com 下載歌詞
-- 自動添加粵拼到歌詞
 
 要求：
 - Python 3.6
@@ -67,7 +66,7 @@ TODO:
 - 中文词典
 - 同音字搜查
 - 从 Mojim.com 下载歌词
-- 自动添加粤拼到歌词
+- 
 
 要求：
 - Python 3.6

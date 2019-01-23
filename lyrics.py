@@ -1,4 +1,5 @@
 import re
+import os
 import json
 import webbrowser
 import requests
@@ -29,8 +30,8 @@ def _find_song_urls(artist, song):
     for s in spans:
         link = s.find('a', {'title': pattern})
         if link is not None:
-            title = link.attrs.get('title')
-            href = link.attrs.get('href')
+            title = link.get('title')
+            href = link.get('href')
             if artist in title:
                 result.append(href)
     return result
@@ -68,6 +69,35 @@ def save_lyrics(artist, song):
         print(f'{artist} - {song} lyrics saved.')
     return None
 
+def download_all(artist_page):
+    """
+    download all lyrics from an artist page on mojim.com
+    """
+    # hc1 = album title
+ 
+    if not os.path.exists('lyrics'):
+        os.makedirs('lyrics')
+    soup = _make_soup(artist_page)
+    album_blocks = soup.findAll('dd', 'hb2')
+    album_blocks.extend(soup.findAll('dd', 'hb3'))
+
+    for block in album_blocks:
+        songs = block.findAll('span', 'hc3')
+        songs.extend(block.findAll('span', 'hc4'))
+        for s in songs:
+            url_list = s.findAll('a')
+            for i in url_list:
+                href = i.get('href')
+                title = i.get('title').strip(' 歌詞')
+                url = f'http://mojim.com{href}'
+                soup = _make_soup(url)
+                lyrics = soup.find('dl', {'id': 'fsZx1'})
+                lyrics = _clean_lyrics(lyrics)
+                with open(f'./lyrics/{title}_{href[1:]}.txt', 'w') as fout:
+                    fout.write(lyrics)
+                print(f'{title} lyrics saved.')
+    return None
+
 
 def search_mojim(query, param):
     """
@@ -84,11 +114,15 @@ def search_mojim(query, param):
     except KeyError:
         print('No such param!')
     else:
-        browser = webbrowser.get('Chrome')
+        browser = webbrowser.get('safari')
         browser.open(url)
     return None
 
 
 if __name__ == "__main__":
-    search_mojim('于文文', 'artist')
-    save_lyrics('于文文', '體面')
+    # search_mojim('體面', 'song')
+    # save_lyrics('于文文', '體面')
+
+    # use search_mojim('于文文', 'artist') to find artist page
+    artist_page = 'https://mojim.com/twh135268.htm'
+    download_all(artist_page)
