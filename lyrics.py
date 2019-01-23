@@ -35,6 +35,7 @@ def _find_song_urls(artist, song):
                 result.append(href)
     return result
 
+
 def _clean_lyrics(lyrics):
     """
     remove junk from the lyrics
@@ -48,6 +49,7 @@ def _clean_lyrics(lyrics):
             continue
         cleaned_lyrics += i
     return cleaned_lyrics.strip()
+
 
 def save_lyrics(artist, song):
     """
@@ -65,6 +67,7 @@ def save_lyrics(artist, song):
             fout.write(lyrics)
         print(f'{artist} - {song} lyrics saved.')
     return None
+
 
 def search_mojim(query, param):
     """
@@ -84,6 +87,7 @@ def search_mojim(query, param):
         browser = webbrowser.get('Chrome')
         browser.open(url)
     return None
+
 
 if __name__ == "__main__":
     search_mojim('于文文', 'artist')
