@@ -1,12 +1,11 @@
 import re
 import json
-
+import webbrowser
 import requests
 from bs4 import BeautifulSoup
 
-song = '你是我的'
 
-def make_soup(url):
+def _make_soup(url):
     """
     make soup!
     """
@@ -15,37 +14,32 @@ def make_soup(url):
     return soup
 
 
-def parse_song_id(song):
+def _find_song_urls(artist, song):
     """
-    parse song id for the given song name from Mojim.com
+    find song urls from mojim.com for the given song name.
     """
     try:
-        soup = make_soup(f'https://mojim.com/{song}.html?t3')
+        soup = _make_soup(f'https://mojim.com/{song}.html?t3')
     except:
         print('unable to make soup :(')
 
     spans = soup.findAll('span', {'class': 'mxsh_ss4'})
     pattern = re.compile(r'(.*?) ')
+    result = []
     for s in spans:
         link = s.find('a', {'title': pattern})
         if link is not None:
-            return link.attrs['href']
-    return None
+            title = link.attrs.get('title')
+            href = link.attrs.get('href')
+            if artist in title:
+                result.append(href)
+    return result
 
-
-def fetch_lyrics(song):
+def _clean_lyrics(lyrics):
     """
-    fetch and save lyrics from Mojim.com
-    output: song_name.txt
+    remove junk from the lyrics
     """
     cleaned_lyrics = ''
-    song_id = parse_song_id(song)
-    soup = make_soup(f'http://mojim.com{song_id}')
-    lyrics = soup.find('dl', {'id': 'fsZx1'})
-    if lyrics is None:
-        print(f'unable to fetch lyrics for: {song}')
-        return None
-
     lyrics = [str(line) for line in lyrics.contents]
     for i in lyrics:
         if 'br' in i:
@@ -53,13 +47,45 @@ def fetch_lyrics(song):
         if '[' in i or ':' in i or '：' in i or '<' in i or 'Mojim' in i:
             continue
         cleaned_lyrics += i
+    return cleaned_lyrics.strip()
 
-    cleaned_lyrics = cleaned_lyrics.strip()
-    with open(song + '.txt', 'w') as fout:
-        fout.write(cleaned_lyrics)
-    print(f'{song} lyrics saved.')
+def save_lyrics(artist, song):
+    """
+    fetch and save lyrics from Mojim.com
+    """
+    song_urls = _find_song_urls(artist, song)
+    for url in song_urls:
+        soup = _make_soup(f'http://mojim.com{url}')
+        lyrics = soup.find('dl', {'id': 'fsZx1'})
+        if lyrics is None:
+            print(f'unable to fetch lyrics for: {song}')
+            return None
+        lyrics = _clean_lyrics(lyrics)
+        with open(f'{song}_{url[1:]}.txt', 'w') as fout:
+            fout.write(lyrics)
+        print(f'{artist} - {song} lyrics saved.')
     return None
 
+def search_mojim(query, param):
+    """
+    search query on mojim.com and open the result page in a broswer
+    """
+    mojim_url = 'https://mojim.com/'
+    url_dict = {
+        'artist': mojim_url + query + '.html?t1',
+        'album': mojim_url + query + '.html?t2',
+        'song': mojim_url + query + '.html?t3',
+        'lyrics': mojim_url + query + '.html?t4',
+    }
+    try:
+        url = url_dict[param]
+    except KeyError:
+        print('No such param!')
+    else:
+        browser = webbrowser.get('Chrome')
+        browser.open(url)
+    return None
 
 if __name__ == "__main__":
-    fetch_lyrics(song)
+    search_mojim('于文文', 'artist')
+    save_lyrics('于文文', '體面')

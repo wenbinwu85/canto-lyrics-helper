@@ -9,17 +9,17 @@ Requirements:
 Functions:
 - Character dictionary for searching jyutping of characters (tradtioncal Chinese characters)
 - Chinese words dictionaries. tradtioncal / simplified / chengyu included.
-- Homonyms dictionary
-- Fetch and save lyrics from Mojim.com (song names in traditional Chinese characters)
-- Mark lyrics with jyutping
+- Homophones dictionary
+- Find and save lyrics from Mojim.com (song names in traditional Chinese characters)
+
 
 Data:
-- Character dictionary: 15080 characters
+- Character dictionary:
 - Words dictinary: 
-    - simplified 800876 entries
-    - traditional 978719 entries
-    - chengyu 49453 entreis
-- Homonyms dictionary: 1893 entries
+    - simplified
+    - traditional
+    - chengyu
+- Homophones dictionary
 
 Note:
 - Dictiontary data are found from the web.
@@ -47,12 +47,12 @@ TODO:
 - BeautifulSoup4
 
 字典：
-- 粵拼字典: 15080 字
+- 粵拼字典
 - 中文詞典: 
-    - 簡體 800876 
-    - 繁體 978719 
-    - 成語 49453
-- 同音字: 1893 聲母/聲韻/聲調 組合
+    - 簡體
+    - 繁體 
+    - 成語
+- 同音字
 
 ---------------------------------------------
 
@@ -73,9 +73,9 @@ TODO:
 - BeautifulSoup4
 
 字典：
-- 粤拼字典: 15080 字
+- 粤拼字典
 - 中文词典: 
-    - 简体 800876 
-    - 繁体 978719 
-    - 成语 49453
-- 同音字: 1893 声母/声韵/声调 组合
+    - 简体 
+    - 繁体 
+    - 成语
+- 同音字
