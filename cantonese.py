@@ -2,13 +2,13 @@ import json
 from functools import reduce
 from itertools import permutations
 
-characters_dict = json.load(open('./dicts/characters.json'))
-homophones = json.load(open('./dicts/homophones.json'))
+characters_dict = json.load(open('./dicts/characters.json', encoding='utf-8'))
+homophones = json.load(open('./dicts/homophones.json', encoding='utf-8'))
 
 corpus = 'fanti'
 dict_name = './dicts/traditional.txt' if corpus == 'fanti' else './dicts/simplified.txt'
 words_dict = []
-with open(dict_name) as file:
+with open(dict_name, encoding='utf-8') as file:
     words_dict = file.readlines()
 
 class Character:

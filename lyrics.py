@@ -64,7 +64,7 @@ def save_lyrics(artist, song):
             print(f'unable to fetch lyrics for: {song}')
             return None
         lyrics = _clean_lyrics(lyrics)
-        with open(f'{song}_{url[1:]}.txt', 'w') as fout:
+        with open(f'{song}_{url[1:]}.txt', 'w', encoding='utf-8') as fout:
             fout.write(lyrics)
         print(f'{artist} - {song} lyrics saved.')
     return None
@@ -93,7 +93,7 @@ def download_all(artist_page):
                 soup = _make_soup(url)
                 lyrics = soup.find('dl', {'id': 'fsZx1'})
                 lyrics = _clean_lyrics(lyrics)
-                with open(f'./lyrics/{title}_{href[1:]}.txt', 'w') as fout:
+                with open(f'./lyrics/{title}_{href[1:]}.txt', 'w', encoding='utf-8') as fout:
                     fout.write(lyrics)
                 print(f'{title} lyrics saved.')
     return None
