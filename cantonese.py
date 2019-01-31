@@ -19,13 +19,14 @@ words_dict = _load_dict('traditional.txt')
 
 
 class Character:
-    def __init__(self, char):
-        self.data = characters_dict.get(char, None)
-        if not self.data:
-            raise ValueError(f'Can not find such character: {char}')
-        self.character = char
-        self._juytpings = self.data.get('jyutpings')
-        self._tones = self.data.get('tones')
+    def __init__(self, char):   
+        try:
+            self._data = characters_dict.get(char, None)
+        except KeyError:
+            print(f'Can not find such character: {char}')  
+        self._character = char
+        self._juytpings = self._data.get('jyutpings')
+        self._tones = self._data.get('tones')
 
 
     def jyutpings(self):
@@ -37,23 +38,31 @@ class Character:
 
 
     def words(self):
-        result = [word.strip('\n') for word in words_dict if self.character in word]
-        return result
+        return [word.strip('\n') for word in words_dict if self._character in word]
 
 
     def homophones(self):
-        result = {jp: homophones_dict.get(jp) for jp in self._juytpings}
-        return result
+        return  {jp: homophones_dict.get(jp) for jp in self._juytpings}
+
+
+    def compare(self, other):
+        if not isinstance(other, Character):
+            raise ValueError(f'Can not compare Character type to {type(other)}')
+        for tone in other.tones():
+            if tone in self._tones:
+                return True
+            else:
+                return False
 
 
 class Word:
     def __init__(self, chars):
-        self.word = chars
-        self.chars = []  # list of character objects
-        self.tones = []  # list of tones combinations
+        self._word = chars
+        self._chars = []  # list of character objects
+        self._tones = []  # list of tones combinations
         try:
             for c in chars:
-                self.chars.append(Character(c))
+                self._chars.append(Character(c))
             self._get_tones_combos()
         except ValueError as e:
             pass # do not print error message
@@ -71,14 +80,14 @@ class Word:
 
 
     def _get_tones_combos(self):
-        tones_lists = [char.tones() for char in self.chars]
+        tones_lists = [char.tones() for char in self._chars]
         tones_combos = reduce(self._make_tones_combos, tones_lists)
-        self.tones = [self._flatten(t) for t in tones_combos]
+        self._tones = [self._flatten(t) for t in tones_combos]
         return None
 
 
     def jyutpings(self):
-        result = {c.character: c.jyutpings() for c in self.chars}
+        result = {c.character: c.jyutpings() for c in self._chars}
         return result
 
 
@@ -113,4 +122,13 @@ def homonyms_by_tones(tones):
 
 if __name__ == '__main__':
     # homonyms_by_tones('33')
-    homonyms_by_word('對不起')
+    # homonyms_by_word('對不起')
+    
+    x = Character('好')
+    y = Character('對')
+    print(x.tones())
+    print(y.tones())
+    if x.compare(y):
+        print('they sound the same!')
+    else:
+        print('they do not sound the same')
