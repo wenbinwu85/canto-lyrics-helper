@@ -50,7 +50,7 @@ class Character:
 
 
     def homophones(self):
-        return  {jp: homophones_dict.get(jp) for jp in self._juytpings}
+        return  {jp: homophones_dict.get(jp) for jp in self._jyutpings}
 
 
     def compare(self, other):
@@ -75,7 +75,7 @@ class Word:
             for c in chars:
                 self._chars.append(Character(c))
             self._get_tones_combos()
-        except ValueError as e:
+        except ValueError:
             pass # do not print error message
 
 
@@ -107,10 +107,10 @@ def homonyms_by_word(word):
     word_obj = Word(word)
     result = {}
 
-    for t in word_obj.tones:
+    for t in word_obj._tones:
         matched_words = []
         for w in words_pool:
-            if t in Word(w).tones:
+            if t in Word(w)._tones:
                 matched_words.append(w)
         result[t] = matched_words
 
@@ -123,7 +123,7 @@ def homonyms_by_word(word):
 
 def homonyms_by_tones(tones):
     words_pool = [w.strip('\n') for w in words_dict if len(w)-1 == len(tones)]
-    result = [w.strip('\n') for w in words_pool if tones in Word(w.strip('\n')).tones]
+    result = [w.strip('\n') for w in words_pool if tones in Word(w.strip('\n'))._tones]
 
     with open('homonyms_by_tones.txt', 'w', encoding='utf-8') as fout:
         fout.write(' '.join(result))
@@ -150,13 +150,11 @@ def compare_phrases(phrase1, phrase2):
     return match 
  
 
-def canto_this(phrase):
-    tone_group = []
+def cantonize(phrase):
     for i in phrase:
         c = Character(i)
-        tone_group.append(c.tones())
-        print(c)
-    print(tone_group)
+        print(c.character(), c.jyutpings())
+    return None
 
 
 if __name__ == '__main__':
@@ -177,4 +175,4 @@ if __name__ == '__main__':
     # else:
         # print('they don not match!')
     
-    canto_this('沈默到對不起')
+    cantonize('沈默到對不起')
