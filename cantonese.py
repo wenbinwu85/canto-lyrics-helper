@@ -26,11 +26,12 @@ class Character:
             print(f'Can not find such character: {char}')  
         self._character = char
         self._jyutpings = self._data.get('jyutpings')
+        self._syllables = self._data.get('syllables')
         self._tones = self._data.get('tones')
 
 
     def __str__(self):
-        return f'{self._character}   jyutpings: {self._jyutpings}, tones: {self._tones}'
+        return f'{self._character}\tjyutpings: {self._jyutpings}\tsyllables: {self._syllables}\ttones: {self._tones}'
 
 
     def character(self):
@@ -39,6 +40,10 @@ class Character:
 
     def jyutpings(self):
         return self._jyutpings
+
+
+    def syllables(self):
+        return self._syllables
 
 
     def tones(self):
