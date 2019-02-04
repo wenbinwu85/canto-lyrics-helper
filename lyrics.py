@@ -39,7 +39,7 @@ def _find_song_urls(artist, song):
 
 def _clean_lyrics(lyrics):
     """
-    remove junk from the lyrics
+    remove junk from the lyrics.
     """
     cleaned_lyrics = ''
     lyrics = [str(line) for line in lyrics.contents]
@@ -54,7 +54,7 @@ def _clean_lyrics(lyrics):
 
 def save_lyrics(artist, song):
     """
-    fetch and save lyrics from Mojim.com
+    fetch and save lyrics from Mojim.com.
     """
     song_urls = _find_song_urls(artist, song)
     for url in song_urls:
@@ -69,9 +69,10 @@ def save_lyrics(artist, song):
         print(f'{artist} - {song} lyrics saved.')
     return None
 
+
 def download_all(artist_page):
     """
-    download all lyrics from an artist page on mojim.com
+    download all lyrics from an artist page on mojim.com.
     """
     if not os.path.exists('lyrics'):
         os.makedirs('lyrics')
@@ -99,7 +100,7 @@ def download_all(artist_page):
 
 def search_mojim(query, param):
     """
-    search query on mojim.com and open the result page in a broswer
+    search query on mojim.com and open the result page in a broswer.
     """
     url_dict = {
         'artist': f'https://mojim.com/{query}.html?t1',

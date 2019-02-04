@@ -7,15 +7,12 @@ def _load_dict(dict_name):
     if '.json' in dict_name:
         return json.load(open(f'./dicts/{dict_name}', encoding='utf-8'))
     if '.txt' in dict_name:
-        filein = open(f'./dicts/{dict_name}', encoding='utf-8')
-        mydict = filein.readlines()
-        filein.close()
-        return mydict
+        with open(f'./dicts/{dict_name}', encoding='utf-8') as file:
+            return file.readlines()
 
 characters_dict = _load_dict('characters.json')
 homophones_dict = _load_dict('homophones.json')
-# words_dict = _load_dict('simplified.txt')
-words_dict = _load_dict('traditional.txt')
+words_dict = _load_dict('traditional.txt') # or use 'simplified.txt' 
 
 
 class Character:
@@ -51,21 +48,34 @@ class Character:
 
 
     def words(self):
-        return [word.strip('\n') for word in words_dict if self._character in word]
+        """
+        return a list of words containing the character.
+        """
+        w = [word.strip('\n') for word in words_dict if self._character in word]
+        for i in w:
+            print(i)
+        return None
 
 
     def homophones(self):
-        return  {jp: homophones_dict.get(jp) for jp in self._jyutpings}
+        """
+        return homophones for each tone of the character.
+        """
+        for jp in self._jyutpings:
+            print(f'{self._character}\t{jp}\t{homophones_dict.get(jp)}')
+        return None
 
 
     def compare(self, other):
+        """
+        compare two character to see if they have a matching tone. return true or false.
+        """
         if not isinstance(other, Character):
             raise ValueError(f'Can not compare Character type to {type(other)}')
         match = True
         for tone in other.tones():
             if tone in self._tones:
-                match = True
-                break
+                return True
             else:
                 match = False
         return match
@@ -74,19 +84,22 @@ class Character:
 class Word:
     def __init__(self, chars):
         self._word = chars
-        self._chars = []  # list of character objects
+        self._characters = []  # list of character objects
         self._tones = []  # list of tones combinations
         try:
             for c in chars:
-                self._chars.append(Character(c))
-            self._get_tones_combos()
+                self._characters.append(Character(c))
+            self._tones = self._get_tones_combos()
         except ValueError:
             pass # do not print error message
 
 
+    def __str__(self):
+        return f'{self._word}\t{self._tones}'
+
+
     def _make_tones_combos(self, list1, list2):
-        result = [(i, p[0]) for i in list1 for p in permutations(list2, r=1)]
-        return result
+        return [(i, p[0]) for i in list1 for p in permutations(list2, r=1)]
 
 
     def _flatten(self, iterable): 
@@ -96,15 +109,15 @@ class Word:
 
 
     def _get_tones_combos(self):
-        tones_lists = [char.tones() for char in self._chars]
+        tones_lists = [char.tones() for char in self._characters]
         tones_combos = reduce(self._make_tones_combos, tones_lists)
-        self._tones = [self._flatten(t) for t in tones_combos]
-        return None
+        return [self._flatten(t) for t in tones_combos]
 
 
     def jyutpings(self):
-        result = {c.character: c.jyutpings() for c in self._chars}
-        return result
+        for c in self._characters:
+            print(f'{c.character()}\t{c.jyutpings()}')
+        return None 
 
 
 def homonyms_by_word(word):
@@ -139,8 +152,8 @@ def homonyms_by_tones(tones):
 def compare_phrases(phrase1, phrase2):
     if len(phrase1) != len(phrase2):
         raise ValueError('Phrases must have the same length.')
-    phrase1_characters = [Character(char) for char in phrase1]
-    phrase2_characters = [Character(char) for char in phrase2]
+    phrase1_characters = [Character(c) for c in phrase1]
+    phrase2_characters = [Character(c) for c in phrase2]
     zipped = zip(phrase1_characters, phrase2_characters)
     
     match = True
@@ -163,21 +176,14 @@ def cantonize(phrase):
 
 
 if __name__ == '__main__':
-    # homonyms_by_tones('33')
-    # homonyms_by_word('對不起')
-    
-    # x = Character('好')
-    # y = Character('對')
-    # print(x)
-    # print(y)
-    # if x.compare(y):
-        # print('they sound the same!')
-    # else:
-        # print('they do not sound the same')
-        
-    # if compare_phrases('疲累', '沈默'):
-       # print('they match!')
-    # else:
-        # print('they don not match!')
-    
     cantonize('沈默到對不起')
+
+    x = Character('好')
+    y = Character('告')
+    print(f'x matches y: {x.compare(y)}')
+    x.homophones()
+    # x.words()
+
+    z = Word('沉默')
+    print(z)
+    z.jyutpings()
