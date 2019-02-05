@@ -31,6 +31,21 @@ class Character:
         return f'{self._character}\tjyutpings: {self._jyutpings}\tsyllables: {self._syllables}\ttones: {self._tones}'
 
 
+    def __eq__(self, other):
+        """
+        compare two character to see if they have a matching tone. return true or false.
+        """
+        if not isinstance(other, Character):
+            raise ValueError(f'Can not compare Character type to {type(other)}')
+        match = True
+        for tone in other.tones():
+            if tone in self._tones:
+                return True
+            else:
+                match = False
+        return match
+
+
     def character(self):
         return self._character
 
@@ -51,34 +66,15 @@ class Character:
         """
         return a list of words containing the character.
         """
-        w = [word.strip('\n') for word in words_dict if self._character in word]
-        for i in w:
-            print(i)
-        return None
+        return [word.strip('\n') for word in words_dict if self._character in word]
 
 
     def homophones(self):
         """
         return homophones for each tone of the character.
         """
-        for jp in self._jyutpings:
-            print(f'{self._character}\t{jp}\t{homophones_dict.get(jp)}')
-        return None
+        return {jp:homophones_dict.get(jp) for jp in self._jyutpings}
 
-
-    def compare(self, other):
-        """
-        compare two character to see if they have a matching tone. return true or false.
-        """
-        if not isinstance(other, Character):
-            raise ValueError(f'Can not compare Character type to {type(other)}')
-        match = True
-        for tone in other.tones():
-            if tone in self._tones:
-                return True
-            else:
-                match = False
-        return match
 
 
 class Word:
@@ -91,11 +87,23 @@ class Word:
                 self._characters.append(Character(c))
             self._tones = self._get_tones_combos()
         except ValueError:
-            pass # do not print error message
+            print('something is wrong!')
 
 
     def __str__(self):
-        return f'{self._word}\t{self._tones}'
+        return f'{self._word}\t{self.jyutpings()}\t{self._tones}'
+
+
+    def __eq__(self, other):
+        if not isinstance(other, Word):
+            raise ValueError(f'Can not compare Word type to {type(other)}')
+        match = True
+        for tone in other.tones():
+            if tone in self._tones:
+                return True
+            else:
+                match = False
+        return match
 
 
     def _make_tones_combos(self, list1, list2):
@@ -115,9 +123,11 @@ class Word:
 
 
     def jyutpings(self):
-        for c in self._characters:
-            print(f'{c.character()}\t{c.jyutpings()}')
-        return None 
+        return [c.jyutpings() for c in self._characters]
+
+
+    def tones(self):
+        return self._tones
 
 
 def homonyms_by_word(word):
@@ -158,12 +168,13 @@ def compare_phrases(phrase1, phrase2):
     
     match = True
     for (a, b) in zipped:
-        if a.compare(b):
+        if a == b:
             continue
         else:
             print('not matched:')
             print(a)
             print(b)
+            print('-'*30)
             match = False
     return match 
  
@@ -172,18 +183,26 @@ def cantonize(phrase):
     for i in phrase:
         c = Character(i)
         print(c.character(), c.jyutpings())
+        print('-'*30)
     return None
 
 
 if __name__ == '__main__':
-    cantonize('沈默到對不起')
+    cantonize('這一雙手卑鄙到抱著你')
 
-    x = Character('好')
-    y = Character('告')
-    print(f'x matches y: {x.compare(y)}')
-    x.homophones()
-    # x.words()
-
-    z = Word('沉默')
-    print(z)
-    z.jyutpings()
+    print(compare_phrases('天氣', '糯米'))
+    
+    '''
+    x = Word('天氣')
+    y = Word('筆記')
+    
+    print(x)
+    print(x.jyutpings())
+    print(x.tones())
+    
+    print(y)
+    print(y.jyutpings())
+    print(y.tones())
+    
+    print(x == y)
+    '''
