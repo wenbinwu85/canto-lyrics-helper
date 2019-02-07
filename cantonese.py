@@ -12,15 +12,15 @@ def _load_dict(dict_name):
 
 characters_dict = _load_dict('characters.json')
 homophones_dict = _load_dict('homophones.json')
-words_dict = _load_dict('traditional.txt') # or use 'simplified.txt' 
+words_dict = _load_dict('traditional.txt') # or use 'simplified.txt'
 
 
 class Character:
-    def __init__(self, char):   
+    def __init__(self, char):
         try:
             self._data = characters_dict.get(char, None)
         except KeyError:
-            print(f'Can not find such character: {char}')  
+            print(f'Can not find such character: {char}')
         self._character = char
         self._jyutpings = self._data.get('jyutpings')
         self._syllables = self._data.get('syllables')
@@ -76,7 +76,6 @@ class Character:
         return {jp:homophones_dict.get(jp) for jp in self._jyutpings}
 
 
-
 class Word:
     def __init__(self, chars):
         self._word = chars
@@ -110,7 +109,7 @@ class Word:
         return [(i, p[0]) for i in list1 for p in permutations(list2, r=1)]
 
 
-    def _flatten(self, iterable): 
+    def _flatten(self, iterable):
         if isinstance(iterable, str):
             return iterable
         return str(self._flatten(iterable[0]) + iterable[1])
@@ -149,35 +148,35 @@ def homonyms_by_word(word):
     return None
 
 
-def homonyms_by_tones(tones):
-    words_pool = [w.strip('\n') for w in words_dict if len(w)-1 == len(tones)]
-    result = [w.strip('\n') for w in words_pool if tones in Word(w.strip('\n'))._tones]
-
-    with open('homonyms_by_tones.txt', 'w', encoding='utf-8') as fout:
-        fout.write(' '.join(result))
-        print('file saved.')
-    return None
+def search_words_by_tone(tone, filter=None):
+    for word in words_dict:
+        try:
+            w = Word(word.strip('\n'))
+        except:
+            continue
+        if tone in w.tones() and filter is None:
+            print(w)
+            continue
+        if tone in w.tones() and word.strip('\n')[-1] == filter:
+            print(w)
 
 
 def compare_phrases(phrase1, phrase2):
-    if len(phrase1) != len(phrase2):
-        raise ValueError('Phrases must have the same length.')
-    phrase1_characters = [Character(c) for c in phrase1]
-    phrase2_characters = [Character(c) for c in phrase2]
+    phrase1_characters = [Character(c) for c in phrase1 if not c in ' []?']
+    phrase2_characters = [Character(c) for c in phrase2 if not c in ' []?']
     zipped = zip(phrase1_characters, phrase2_characters)
-    
+
     match = True
     for (a, b) in zipped:
         if a == b:
             continue
         else:
-            print('not matched:')
-            print(a)
-            print(b)
+            print(a.character(), a.jyutpings())
+            print(b.character(), b.jyutpings())
             print('-'*30)
             match = False
-    return match 
- 
+    return match
+
 
 def cantonize(phrase):
     for i in phrase:
@@ -189,20 +188,4 @@ def cantonize(phrase):
 
 if __name__ == '__main__':
     cantonize('這一雙手卑鄙到抱著你')
-
-    print(compare_phrases('天氣', '糯米'))
-    
-    '''
-    x = Word('天氣')
-    y = Word('筆記')
-    
-    print(x)
-    print(x.jyutpings())
-    print(x.tones())
-    
-    print(y)
-    print(y.jyutpings())
-    print(y.tones())
-    
-    print(x == y)
-    '''
+    search_words_by_tone('')
