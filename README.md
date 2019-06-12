@@ -7,7 +7,7 @@ I wrote this little script to help me write Cantonese song lyrics.
 
 歌词助手
 
-最近迷上写歌词，发现写广东歌词真的很难， 所以写了个助手帮忙。
+最近迷上写歌词，发现写广东歌词真的很难， 所以些了个助手帮忙。
 
 主要功能：
 - 粤拼搜查
