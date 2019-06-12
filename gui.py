@@ -32,14 +32,14 @@ class LyricsGUI(wx.Frame):
 
         # ----- editor container -----
         lyrics_sizer = wx.StaticBoxSizer(wx.HORIZONTAL, self.panel, label='Lyrics')
-        self.lyrics_original = wx.TextCtrl(
+        self.left_editor = wx.TextCtrl(
             self.panel, -1, size=(320, 600), style=wx.TE_MULTILINE | wx.TE_PROCESS_ENTER
             )
-        self.lyrics_new = wx.TextCtrl(
+        self.right_editor = wx.TextCtrl(
             self.panel, -1, size=(320, 600), style=wx.TE_MULTILINE | wx.TE_PROCESS_ENTER
             )
-        lyrics_sizer.Add(self.lyrics_original, 0, wx.ALL)
-        lyrics_sizer.Add(self.lyrics_new, 0, wx.ALL)
+        lyrics_sizer.Add(self.left_editor, 0, wx.ALL)
+        lyrics_sizer.Add(self.right_editor, 0, wx.ALL)
 
         # ----- main container -----
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -58,16 +58,16 @@ class LyricsGUI(wx.Frame):
 
     def download_lyrics(self, event):
         song = self.song_field.GetValue()
-        self.mojim.artist = self.artist_field.GetValue()
-        file = f'{self.mojim.artist} - {song}.txt'
-        if self.mojim.save(song):
+        artist = self.artist_field.GetValue()
+        file = f'{artist} - {song}.txt'
+        if self.mojim.save(artist, song):
             with open(file, 'r') as lyrics:
-                self.lyrics_original.Clear()
-                self.lyrics_original.write(''.join(lyrics))
-            self.SetStatusText(f'lyrics for {self.mojim.artist} - {song} saved.')
+                self.left_editor.Clear()
+                self.left_editor.write(''.join(lyrics))
+            self.SetStatusText(f'lyrics for {artist} - {song} saved.')
         else:
             self.SetStatusText(
-                f'unable to download lyrics for {self.mojim.artist} - {song}.'
+                f'unable to download lyrics for {artist} - {song}.'
                 )
         return None
 
@@ -78,10 +78,12 @@ class MyMenuBar(wx.MenuBar):
         self.frame = frame
 
         menu1 = wx.Menu()
-        menu1.Append(101, 'Open...')
-        menu1.Append(102, 'Save')
+        menu1.Append(101, 'Open on left editor')
+        menu1.Append(102, 'Open on right editor')
+        menu1.Append(103, 'Save left file')
+        menu1.Append(104, 'Save right file')
         menu1.AppendSeparator()
-        menu1.Append(103, 'Close', 'Exit')
+        menu1.Append(105, 'Close', 'Exit')
 
         menu2 = wx.Menu()
         menu2.Append(201, 'Clear')
@@ -97,12 +99,14 @@ class MyMenuBar(wx.MenuBar):
         about = help_menu.Append(wx.ID_ABOUT)
 
         self.Bind(wx.EVT_MENU, self.file_dialog, id=101)
-        self.Bind(wx.EVT_MENU, self.save_lyrics, id=102)
-        self.Bind(wx.EVT_MENU, self.exit_program, id=103)
+        self.Bind(wx.EVT_MENU, self.file_dialog, id=102)
+        self.Bind(wx.EVT_MENU, self.save_dialog, id=103)
+        self.Bind(wx.EVT_MENU, self.save_dialog, id=104)
+        self.Bind(wx.EVT_MENU, self.exit_program, id=105)
         self.Bind(wx.EVT_MENU, self.clear_editors, id=201)
         self.Bind(wx.EVT_MENU, self.change_lang, id=301)
         self.Bind(wx.EVT_MENU, self.change_lang, id=302)
-        self.Bind(wx.EVT_MENU, self.dictionary_gui, id=401)
+        self.Bind(wx.EVT_MENU, self.open_dictionary, id=401)
         self.Bind(wx.EVT_MENU, self.about_dialog, about)
 
         self.Append(menu1, 'File')
@@ -112,8 +116,11 @@ class MyMenuBar(wx.MenuBar):
         self.Append(help_menu, 'Help')
 
     def file_dialog(self, event):
-        """file dialog"""
-
+        if event.GetId() == 101:
+            editor = self.frame.left_editor
+        if event.GetId() == 102:
+            editor = self.frame.right_editor
+        
         wildcards = 'Text file (*.txt)|*.txt|' \
                 'Lyrics file (*.lyrics)|*.lyrics|' \
                 'All files (*.*)|*.*'
@@ -131,11 +138,16 @@ class MyMenuBar(wx.MenuBar):
         if dialog.ShowModal() == wx.ID_OK:
             path = dialog.GetPath()
             with open(path, 'r') as file:
-                self.frame.lyrics_original.Clear()
-                self.frame.lyrics_original.write(''.join(file))
+                editor.Clear()
+                editor.write(''.join(file))
         return None
 
-    def save_lyrics(self, event):
+    def save_dialog(self, event):
+        if event.GetId() == 103:
+            editor = self.frame.left_editor
+        if event.GetId() == 104:
+            editor = self.frame.right_editor
+
         wildcards = 'Text file (*.txt)|*.txt|' \
                 'Lyrics file (*.lyrics)|*.lyrics|' \
                 'All files (*.*)|*.*'
@@ -152,7 +164,7 @@ class MyMenuBar(wx.MenuBar):
         if dialog.ShowModal() == wx.ID_OK:
             path = dialog.GetPath()
             with open(path, 'w') as fout:
-                fout.write(self.frame.lyrics_new.GetValue())
+                fout.write(editor.GetValue())
             self.SetStatusText(f'lyrics save to {path}.')
         else:
             self.SetStatusText('save cancelled.')
@@ -162,8 +174,8 @@ class MyMenuBar(wx.MenuBar):
         sys.exit()
 
     def clear_editors(self, event):
-        self.frame.lyrics_original.Clear()
-        self.frame.lyrics_new.Clear()
+        self.frame.left_editor.Clear()
+        self.frame.right_editor.Clear()
         self.SetStatusText('Editors cleard.')
         return None
 
@@ -176,16 +188,18 @@ class MyMenuBar(wx.MenuBar):
             self.frame.SetStatusText('Mojim language set to Traditional Chinese.')
         return None
 
-    def dictionary_gui(self, event):
-        pass
+    def open_dictionary(self, event):
+        frame = DictionaryGUI(None, title='Dictionary')
+        frame.show()
+        return None
             
                                     
     def about_dialog(self, event):
         """about dialog box"""
 
         info = wx.adv.AboutDialogInfo()
-        info.Name = '歌词助手'
-        info.Version = 'v0.0.3'
+        info.Name = 'Canto Lyrics Helper'
+        info.Version = 'v0.0.4'
         info.Copyright = '(c) 2019 Wenbin Wu\n' 
         info.Description = '' + \
             'Email: dev@wuwenb.in\n' + \
@@ -194,8 +208,28 @@ class MyMenuBar(wx.MenuBar):
         return None
 
 
+class DictinaryGUI(wx.Frame):
+    def __init__(self, parent, title, size=(640, 800)):
+        wx.Frame.__init__(
+            self, parent, title=title, size=size,
+            style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
+            )
+        self.CenterOnScreen()
+        self.panel = wx.Panel(self)
+        
+        # ----- main container -----
+        self.main_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.main_sizer.Fit(self.panel)
+        self.panel.SetSizer(self.main_sizer)     
+        
+        # ----- status bar -----
+        self.CreateStatusBar()
+        self.SetStatusText('Hello World.')
+
+
+
 if __name__ == '__main__':
     app = wx.App()
-    myframe = LyricsGUI(None, 'Lyrics Helper')
+    myframe = LyricsGUI(None, 'Canto Lyrics Helper')
     myframe.Show()
     app.MainLoop()
