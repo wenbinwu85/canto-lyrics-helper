@@ -41,17 +41,10 @@ class LyricsGUI(wx.Frame):
         lyrics_sizer.Add(self.lyrics_original, 0, wx.ALL)
         lyrics_sizer.Add(self.lyrics_new, 0, wx.ALL)
 
-        # ----- buttons container -----
-        buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        clear_button = wx.Button(self.panel, label='Clear')
-        clear_button.Bind(wx.EVT_BUTTON, self.clear_editors)
-        buttons_sizer.Add(clear_button, 0, wx.ALL)
-
         # ----- main container -----
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.main_sizer.Add(download_sizer, 0, wx.ALL | wx.EXPAND, 2)
         self.main_sizer.Add(lyrics_sizer, 0, wx.ALL | wx.EXPAND, 2)
-        self.main_sizer.Add(buttons_sizer, 0, wx.ALL | wx.ALIGN_CENTER, 5)
         self.main_sizer.Fit(self.panel)
         self.panel.SetSizer(self.main_sizer)
 
@@ -78,35 +71,6 @@ class LyricsGUI(wx.Frame):
                 )
         return None
 
-    def clear_editors(self, event):
-        self.lyrics_original.Clear()
-        self.lyrics_new.Clear()
-        self.SetStatusText('Editors cleard.')
-        return None
-
-    def save_lyrics(self, event):
-        wildcards = 'Text file (*.txt)|*.txt|' \
-                'Lyrics file (*.lyrics)|*.lyrics|' \
-                'All files (*.*)|*.*'
-
-        dialog = wx.FileDialog(
-            self.panel, 
-            message='Save lyrics as ...', 
-            defaultDir=os.getcwd(),
-            defaultFile=f'{self.artist_field.GetValue()} - {self.song_field.GetValue()}.txt', 
-            wildcard=wildcards, 
-            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
-            )
-
-        if dialog.ShowModal() == wx.ID_OK:
-            path = dialog.GetPath()
-            with open(path, 'w') as fout:
-                fout.write(self.lyrics_new.GetValue())
-            self.SetStatusText(f'lyrics save to {path}.')
-        else:
-            self.SetStatusText('save cancelled.')
-        return None
-
 
 class MyMenuBar(wx.MenuBar):
     def __init__(self, frame):
@@ -114,44 +78,38 @@ class MyMenuBar(wx.MenuBar):
         self.frame = frame
 
         menu1 = wx.Menu()
-        menu1_open = menu1.Append(101, 'Open...')
-        menu1_save = menu1.Append(102, 'Save')
+        menu1.Append(101, 'Open...')
+        menu1.Append(102, 'Save')
         menu1.AppendSeparator()
-        menu1_exit = menu1.Append(103, 'Close', 'Exit')
+        menu1.Append(103, 'Close', 'Exit')
 
         menu2 = wx.Menu()
-        menu2_simplified = menu2.Append(201, 'Simplified Chinese', '', wx.ITEM_RADIO)
-        menu2_traditional = menu2.Append(202, 'Traditional Chinese', '', wx.ITEM_RADIO)
+        menu2.Append(201, 'Clear')
+
+        menu3 = wx.Menu()
+        menu3.Append(301, 'Use Simplified Chinese', '', wx.ITEM_RADIO)
+        menu3.Append(302, 'Use Traditional Chinese', '', wx.ITEM_RADIO)
  
+        menu4 = wx.Menu()
+        menu4.Append(401, 'Dictionary')
+
+
         help_menu = wx.Menu()
         about = help_menu.Append(wx.ID_ABOUT)
 
-        self.Bind(wx.EVT_MENU, self.file_dialog, menu1_open)
-        self.Bind(wx.EVT_MENU, self.frame.save_lyrics, menu1_save)
-        self.Bind(wx.EVT_MENU, self.exit_program, menu1_exit)
-        self.Bind(wx.EVT_MENU, self.change_lang, menu2_simplified)
-        self.Bind(wx.EVT_MENU, self.change_lang, menu2_traditional)
+        self.Bind(wx.EVT_MENU, self.file_dialog, id=101)
+        self.Bind(wx.EVT_MENU, self.save_lyrics, id=102)
+        self.Bind(wx.EVT_MENU, self.exit_program, id=103)
+        self.Bind(wx.EVT_MENU, self.clear_editors, id=201)
+        self.Bind(wx.EVT_MENU, self.change_lang, id=301)
+        self.Bind(wx.EVT_MENU, self.change_lang, id=302)
         self.Bind(wx.EVT_MENU, self.about_dialog, about)
 
         self.Append(menu1, 'File')
-        self.Append(menu2, 'Options')
+        self.Append(menu2, 'Edit')
+        self.Append(menu3, 'Mojim')
+        self.Append(menu4, 'Tools')
         self.Append(help_menu, 'Help')
-
-    def exit_program(self, event):
-        sys.exit()
-
-    def about_dialog(self, event):
-        """about dialog box"""
-
-        info = wx.adv.AboutDialogInfo()
-        info.Name = '歌词助手'
-        info.Version = 'v0.0.3'
-        info.Copyright = '(c) 2019 Wenbin Wu\n' 
-        info.Description = '' + \
-            'Email: dev@wuwenb.in\n' + \
-            'Github: https://github.com/wenbinwu85/'     
-        wx.adv.AboutBox(info)
-        return None
 
     def file_dialog(self, event):
         """file dialog"""
@@ -177,15 +135,59 @@ class MyMenuBar(wx.MenuBar):
                 self.frame.lyrics_original.write(''.join(file))
         return None
 
+    def save_lyrics(self, event):
+        wildcards = 'Text file (*.txt)|*.txt|' \
+                'Lyrics file (*.lyrics)|*.lyrics|' \
+                'All files (*.*)|*.*'
+
+        dialog = wx.FileDialog(
+            self, 
+            message='Save lyrics as ...', 
+            defaultDir=os.getcwd(),
+            defaultFile=f'{self.frame.artist_field.GetValue()} - {self.frame.song_field.GetValue()}.txt', 
+            wildcard=wildcards, 
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
+            )
+
+        if dialog.ShowModal() == wx.ID_OK:
+            path = dialog.GetPath()
+            with open(path, 'w') as fout:
+                fout.write(self.frame.lyrics_new.GetValue())
+            self.SetStatusText(f'lyrics save to {path}.')
+        else:
+            self.SetStatusText('save cancelled.')
+        return None
+
+    def exit_program(self, event):
+        sys.exit()
+
+    def clear_editors(self, event):
+        self.frame.lyrics_original.Clear()
+        self.frame.lyrics_new.Clear()
+        self.SetStatusText('Editors cleard.')
+        return None
+
     def change_lang(self, event):
-        if event.GetId() == 201:
+        if event.GetId() == 301:
             self.frame.mojim.lang = 0
             self.frame.SetStatusText('Mojim language set to Simplified Chinese.')
-        elif event.GetId() == 202:
+        elif event.GetId() == 302:
             self.frame.mojim.lang = 1
             self.frame.SetStatusText('Mojim language set to Traditional Chinese.')
         return None
             
+    def about_dialog(self, event):
+        """about dialog box"""
+
+        info = wx.adv.AboutDialogInfo()
+        info.Name = '歌词助手'
+        info.Version = 'v0.0.3'
+        info.Copyright = '(c) 2019 Wenbin Wu\n' 
+        info.Description = '' + \
+            'Email: dev@wuwenb.in\n' + \
+            'Github: https://github.com/wenbinwu85/'     
+        wx.adv.AboutBox(info)
+        return None
 
 
 if __name__ == '__main__':
