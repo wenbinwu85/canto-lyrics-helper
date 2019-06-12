@@ -1,9 +1,7 @@
 import wx
-import wx.lib.intctrl
-import wx.lib.mixins.listctrl as listmixins
 from cantolyrics import Character, Word, Mojim
 
-class MyGUI(wx.Frame, listmixins.ColumnSorterMixin):
+class MyGUI(wx.Frame):
     def __init__(self, parent, title, size=(600, 800)):
         wx.Frame.__init__(
             self, parent, title=title, size=size,
@@ -12,11 +10,6 @@ class MyGUI(wx.Frame, listmixins.ColumnSorterMixin):
         self.CenterOnScreen()
         self.panel = wx.Panel(self)
 
-        # if wx.Platform == '__WXMSW__':
-        #     self.SetFont(wx.Font(10, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'courier'))
-        # else:
-        #     self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False, 'Monaco'))
-
         # ----- search field container -----
         download_sizer = wx.StaticBoxSizer(wx.HORIZONTAL, self.panel, label='下载歌词')
         song_label = wx.StaticText(self.panel, label=' 歌名:', size=(50, -1))
@@ -24,7 +17,7 @@ class MyGUI(wx.Frame, listmixins.ColumnSorterMixin):
         artist_label = wx.StaticText(self.panel, label=' 歌手:', size=(50, -1))
         self.artist_field = wx.TextCtrl(self.panel, size=(140, -1))
         search_button = wx.Button(self.panel, label='下载')
-        search_button.Bind(wx.EVT_BUTTON, self.search_mojim)
+        search_button.Bind(wx.EVT_BUTTON, self.download_lyrics)
         download_sizer.Add(song_label, 0, wx.ALL | wx.EXPAND, 2)
         download_sizer.Add(self.song_field, 0, wx.ALL | wx.EXPAND, 2)
         download_sizer.Add(artist_label, 0, wx.ALL | wx.EXPAND, 2)
@@ -37,7 +30,6 @@ class MyGUI(wx.Frame, listmixins.ColumnSorterMixin):
                        style=wx.TE_MULTILINE | wx.TE_PROCESS_ENTER)
         self.lyrics_new = wx.TextCtrl(self.panel, -1, size=(300, 600), 
                        style=wx.TE_MULTILINE | wx.TE_PROCESS_ENTER)
-        # self.lyrics_original.SetEditable(True)
         self.lyrics_sizer.Add(self.lyrics_original, 0, wx.ALL)
         self.lyrics_sizer.Add(self.lyrics_new, 0, wx.ALL)
 
@@ -59,7 +51,7 @@ class MyGUI(wx.Frame, listmixins.ColumnSorterMixin):
         self.CreateStatusBar()
         self.SetStatusText('你好.')
 
-    def search_mojim(self, event):
+    def download_lyrics(self, event):
         song = self.song_field.GetValue()
         artist = self.artist_field.GetValue()
         mojim = Mojim()

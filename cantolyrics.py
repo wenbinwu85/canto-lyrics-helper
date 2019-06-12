@@ -47,6 +47,7 @@ class Corpus:
             return [i.strip('\n') for i in self.idioms2 if char in i]
         return [i.strip('\n') for i in self.idioms1 if char in i]
 
+
 corpus = Corpus()
 
 
