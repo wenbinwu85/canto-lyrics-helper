@@ -135,10 +135,10 @@ class Word:
 
 
 class Mojim:
-    def __init__(self, artist=''):
+    def __init__(self, artist='', song=''):
         self._artist = artist
+        self._song = song
         self._lang = 0
-        self._tag = ['g3', 't3']
 
     def _make_soup(self, url):
         resp = requests.get(url).text
@@ -153,6 +153,8 @@ class Mojim:
                 i = '\n'
             if '[' in i or ':' in i or '：' in i or '<' in i or 'Mojim' in i:
                 continue
+            if self.artist in i or self.song in i:
+                continue
             cleaned += i
         return cleaned.strip()
 
@@ -161,8 +163,16 @@ class Mojim:
         return self._artist
 
     @artist.setter
-    def artist(self, name):
-        self._artist = name
+    def artist(self, artist):
+        self._artist = artist
+
+    @property
+    def song(self):
+        return self._song
+
+    @song.setter
+    def song(self, song):
+        self._song = song
 
     @property
     def lang(self):
@@ -172,27 +182,31 @@ class Mojim:
     def lang(self, lang):
         self._lang = lang
 
-    def save(self, song):
-        soup = self._make_soup(f'https://mojim.com/{song}.html?{self._tag[self._lang]}')
+    def save(self, artist=None, song=None):
+        if not artist and not song:
+            artist = self.artist
+            song = self.song
+        else:
+            self.artist = artist
+            self.song = song
+        tag = 't3' if self.lang else 'g3'
+        soup = self._make_soup(f'https://mojim.com/{song}.html?{tag}')
         spans = soup.findAll('span', {'class': 'mxsh_ss4'})
         pattern = re.compile(r'(.*?) ')
-        result = []
+        url = ''
         for s in spans:
             link = s.find('a', {'title': pattern})
             if link:
-                title = link.get('title')
-                href = link.get('href')
-                if self.artist in title:
-                    result.append(href)
-        if not result:
+                if artist in link.get('title'):
+                    url = link.get('href')
+        soup = self._make_soup(f'http://mojim.com{url}')
+        lyrics = soup.find('dl', {'id': 'fsZx1'})
+        if not lyrics:
             return False
-        for url in result:
-            soup = self._make_soup(f'http://mojim.com{url}')
-            lyrics = soup.find('dl', {'id': 'fsZx1'})
-            lyrics = self._clean(lyrics)
-            with open(f'{self.artist} - {song}.txt', 'w', encoding='utf-8') as fout:
-                fout.write(lyrics)
-        return True  
+        lyrics = self._clean(lyrics)
+        with open(f'{artist} - {song}.txt', 'w', encoding='utf-8') as fout:
+            fout.write(lyrics)
+        return True
 
     # def archive(self, artist_page):
     #     if not os.path.exists('lyrics'):
@@ -222,4 +236,5 @@ class Mojim:
 if __name__ == '__main__':
     mj = Mojim()
     mj.artist = '陳奕迅'
+    mj.lang = 1
     mj.save('讓我留在你身邊')

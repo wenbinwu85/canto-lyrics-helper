@@ -93,7 +93,6 @@ class MyMenuBar(wx.MenuBar):
         menu4 = wx.Menu()
         menu4.Append(401, 'Dictionary')
 
-
         help_menu = wx.Menu()
         about = help_menu.Append(wx.ID_ABOUT)
 
@@ -103,6 +102,7 @@ class MyMenuBar(wx.MenuBar):
         self.Bind(wx.EVT_MENU, self.clear_editors, id=201)
         self.Bind(wx.EVT_MENU, self.change_lang, id=301)
         self.Bind(wx.EVT_MENU, self.change_lang, id=302)
+        self.Bind(wx.EVT_MENU, self.dictionary_gui, id=401)
         self.Bind(wx.EVT_MENU, self.about_dialog, about)
 
         self.Append(menu1, 'File')
@@ -175,7 +175,11 @@ class MyMenuBar(wx.MenuBar):
             self.frame.mojim.lang = 1
             self.frame.SetStatusText('Mojim language set to Traditional Chinese.')
         return None
+
+    def dictionary_gui(self, event):
+        pass
             
+                                    
     def about_dialog(self, event):
         """about dialog box"""
 
