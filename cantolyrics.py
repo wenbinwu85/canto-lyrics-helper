@@ -61,7 +61,6 @@ class Character:
         self._tones = self._data.get('tones')
 
     def __str__(self):
-        jyutpings = ''.join
         return f'Character: {self._character} \
                 Jyutpings: {self.jyutpings} \
                 Syllables: {self.syllables} \

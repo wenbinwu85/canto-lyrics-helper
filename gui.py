@@ -6,7 +6,7 @@ from cantolyrics import Character, Word, Mojim
 
 class LyricsGUI(wx.Frame):
     def __init__(self, parent, title, size=(640, 800)):
-        wx.Frame.__init__(
+        super().__init__(
             self, parent, title=title, size=size,
             style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
             )
@@ -74,7 +74,7 @@ class LyricsGUI(wx.Frame):
 
 class MyMenuBar(wx.MenuBar):
     def __init__(self, frame):
-        wx.MenuBar.__init__(self)
+        super().__init__(self)
         self.frame = frame
 
         menu1 = wx.Menu()
@@ -125,7 +125,7 @@ class MyMenuBar(wx.MenuBar):
                 'Lyrics file (*.lyrics)|*.lyrics|' \
                 'All files (*.*)|*.*'
 
-        dialog = wx.FileDialog(
+        with wx.FileDialog(
             self, 
             message='Choose a lyrics file',
             defaultDir=os.getcwd(),
@@ -133,13 +133,13 @@ class MyMenuBar(wx.MenuBar):
             wildcard=wildcards,
             style=wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_CHANGE_DIR | 
             wx.FD_FILE_MUST_EXIST | wx.FD_PREVIEW
-            )
+            ) as dialog:
 
-        if dialog.ShowModal() == wx.ID_OK:
-            path = dialog.GetPath()
-            with open(path, 'r') as file:
-                editor.Clear()
-                editor.write(''.join(file))
+            if dialog.ShowModal() == wx.ID_OK:
+                path = dialog.GetPath()
+                with open(path, 'r') as file:
+                    editor.Clear()
+                    editor.write(''.join(file))
         return None
 
     def save_dialog(self, event):
@@ -152,22 +152,22 @@ class MyMenuBar(wx.MenuBar):
                 'Lyrics file (*.lyrics)|*.lyrics|' \
                 'All files (*.*)|*.*'
 
-        dialog = wx.FileDialog(
+        with wx.FileDialog(
             self, 
             message='Save lyrics as ...', 
             defaultDir=os.getcwd(),
             defaultFile=f'{self.frame.artist_field.GetValue()} - {self.frame.song_field.GetValue()}.txt', 
             wildcard=wildcards, 
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT
-            )
+            ) as dialog:
 
-        if dialog.ShowModal() == wx.ID_OK:
-            path = dialog.GetPath()
-            with open(path, 'w') as fout:
-                fout.write(editor.GetValue())
-            self.SetStatusText(f'lyrics save to {path}.')
-        else:
-            self.SetStatusText('save cancelled.')
+            if dialog.ShowModal() == wx.ID_OK:
+                path = dialog.GetPath()
+                with open(path, 'w') as fout:
+                    fout.write(editor.GetValue())
+                self.SetStatusText(f'lyrics save to {path}.')
+            else:
+                self.SetStatusText('save cancelled.')
         return None
 
     def exit_program(self, event):
@@ -190,7 +190,7 @@ class MyMenuBar(wx.MenuBar):
 
     def open_dictionary(self, event):
         frame = DictionaryGUI(None, title='Dictionary')
-        frame.show()
+        frame.Show()
         return None
             
                                     
@@ -208,17 +208,26 @@ class MyMenuBar(wx.MenuBar):
         return None
 
 
-class DictinaryGUI(wx.Frame):
-    def __init__(self, parent, title, size=(640, 800)):
-        wx.Frame.__init__(
+class DictionaryGUI(wx.Frame):
+    def __init__(self, parent, title, size=(640, 400)):
+        super().__init__(
             self, parent, title=title, size=size,
             style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX)
             )
         self.CenterOnScreen()
         self.panel = wx.Panel(self)
-        
+
+        # ----- search field container -----
+        search_sizer = wx.StaticBoxSizer(wx.HORIZONTAL, self.panel, label='Search Dictionary:')
+        self.search_field = wx.SearchCtrl(self.panel, size=(640, -1), style=wx.TE_PROCESS_ENTER)
+        self.search_field.ShowCancelButton(True)
+        self.search_field.ShowSearchButton(True)
+        # self.search_field.Bind(wx.EVT_TEXT, self.search_restaurant)
+        search_sizer.Add(self.search_field, 0, wx.ALL | wx.CENTER, 5)
+
         # ----- main container -----
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.main_sizer.Add(search_sizer)
         self.main_sizer.Fit(self.panel)
         self.panel.SetSizer(self.main_sizer)     
         
@@ -230,6 +239,6 @@ class DictinaryGUI(wx.Frame):
 
 if __name__ == '__main__':
     app = wx.App()
-    myframe = LyricsGUI(None, 'Canto Lyrics Helper')
+    myframe = DictionaryGUI(None, 'Testing')
     myframe.Show()
     app.MainLoop()
