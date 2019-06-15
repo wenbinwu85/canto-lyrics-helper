@@ -39,7 +39,11 @@ class Corpus:
         return sorted(words, key=len)
 
     def get_homophones(self, char):
-        return {jp:self.homophones.get(jp) for jp in char.jyutpings}
+        result = ''
+        for jp in char.jyutpings:
+            homophones = f"{jp} : {''.join(self.homophones.get(jp))}\n"
+            result += homophones
+        return result
 
     def get_idioms(self, char, long=False):
         if long:
@@ -104,7 +108,7 @@ class Character:
         return corpus.get_words(self.character)
 
     def homophones(self):
-        return corpus.get_homophones(self.character)
+        return corpus.get_homophones(self)
 
     def idioms(self):
         idioms = corpus.get_idioms(self.character)
@@ -233,7 +237,11 @@ class Mojim:
 
 
 if __name__ == '__main__':
-    mj = Mojim()
-    mj.artist = '陳奕迅'
-    mj.lang = 1
-    mj.save('讓我留在你身邊')
+    char = Character('好')
+    words = char.words()
+    idioms = char.idioms()
+    homophones = char.homophones()
+
+    print(words, '\n')
+    print(idioms, '\n')
+    print(homophones, '\n')

@@ -13,5 +13,5 @@ class LyricsApp(wx.App):
 
 
 if __name__ == '__main__':
-    app = LyricsApp(redirect=False)
+    app = LyricsApp()
     app.MainLoop()
