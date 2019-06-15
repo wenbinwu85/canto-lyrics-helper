@@ -72,15 +72,15 @@ class MyMenuBar(wx.MenuBar):
         self.Bind(wx.EVT_MENU, self.append_page, id=402)
         self.Bind(wx.EVT_MENU, self.about_dialog, about)
 
-        self.Append(menu1, '&File')
+        self.Append(menu1, 'File')
         self.Append(menu3, 'Mojim')
         self.Append(menu4, 'Pages')
-        self.Append(help_menu, '&Help')
+        self.Append(help_menu, 'Help')
 
     def file_dialog(self, event):
         if event.GetId() == 101:
             editor = self.frame.left_editor
-        if event.GetId() == 102:
+        elif event.GetId() == 102:
             editor = self.frame.right_editor
         
         wildcards = 'Text file (*.txt)|*.txt|' \
@@ -107,7 +107,7 @@ class MyMenuBar(wx.MenuBar):
     def save_dialog(self, event):
         if event.GetId() == 103:
             editor = self.frame.left_editor
-        else:
+        elif event.GetId() == 104:
             editor = self.frame.right_editor
 
         wildcards = 'Text file (*.txt)|*.txt|' \
@@ -143,22 +143,19 @@ class MyMenuBar(wx.MenuBar):
         elif event.GetId() == 302:
             mojim_lang = 1
             self.frame.SetStatusText('Mojim language set to Traditional Chinese.')
-
         return None
 
     def append_page(self, event):
         if event.GetId() == 401:
             page = MainPage(self.frame)
             label = 'Main'
-        else:
+        elif event.GetId() == 402:
             page = DictionaryPage(self.frame)
             label = 'Dictionary'
         self.frame.notebook.AddPage(page, label)
         return None
                                             
     def about_dialog(self, event):
-        """about dialog box"""
-
         info = wx.adv.AboutDialogInfo()
         info.Name = 'Canto Lyrics Helper'
         info.Version = 'v0.0.7'
@@ -227,7 +224,7 @@ class MainPage(wx.Panel):
 class DictionaryPage(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
-        choicebook = wx.Choicebook(self)
+        choicebook = ListChoicebook(self)
 
         # ----- search field container -----
         search_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -243,17 +240,10 @@ class DictionaryPage(wx.Panel):
         search_sizer.Add(self.idioms_cb, wx.ALL | wx.CENTER, 2)
         search_sizer.Add(self.homophones_cb, wx.ALL | wx.CENTER, 2)
 
-        # self.result_list = wx.TextCtrl(
-        #     self, -1, size=(640, 600), style=wx.TE_MULTILINE | wx.TE_PROCESS_ENTER
-        #     )
-        # self.result_list.SetEditable(False)
-
-        choicebook = ListChoicebook(self)
-
         # ----- main container -----
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.main_sizer.Add(search_sizer, 0, wx.ALL | wx.EXPAND, 3)
-        self.main_sizer.Add(choicebook, 0, wx.ALL | wx.EXPAND, 3)
+        self.main_sizer.Add(search_sizer, 0, wx.ALL | wx.EXPAND, 2)
+        self.main_sizer.Add(choicebook, 0, wx.ALL | wx.EXPAND, 2)
         self.main_sizer.Fit(self)
         self.main_sizer.Layout()
         self.SetSizer(self.main_sizer)
@@ -277,29 +267,20 @@ class DictionaryPage(wx.Panel):
 class ListChoicebook(wx.Choicebook):
     def __init__(self, parent):
         wx.Choicebook.__init__(self, parent)
-        labels = ['hello', 'world', 'ahben', 'loves', 'jennifer']
-        # Now make a bunch of panels for the choice book
-        count = 1
-        for txt in labels:
-            win = self.make_subpage()
-            self.AddPage(win, txt)
-        self.Bind(wx.EVT_CHOICEBOOK_PAGE_CHANGED, self.OnPageChanged)
-        self.Bind(wx.EVT_CHOICEBOOK_PAGE_CHANGING, self.OnPageChanging)
+        labels = ['Two', 'Three', 'Four', 'Five+']
+        for text in labels:
+            subpage = self.make_subpage()
+            self.AddPage(subpage, text)
+        self.Bind(wx.EVT_CHOICEBOOK_PAGE_CHANGED, self.page_change)
+        self.Bind(wx.EVT_CHOICEBOOK_PAGE_CHANGING, self.page_change)
 
     def make_subpage(self):
         panel = wx.Panel(self)
         list_ctrl = wx.ListCtrl(panel, size=(640, 600), style=wx.LC_REPORT)
-        list_ctrl.InsertColumn(0, 'Name', width=200)
-        list_ctrl.InsertColumn(1, 'Age', width=200)
+        list_ctrl.InsertColumn(0, 'Words', width=640)
         return panel
 
-    def OnPageChanged(self, event):
-        old = event.GetOldSelection()
-        new = event.GetSelection()
-        sel = self.GetSelection()
-        event.Skip()
-
-    def OnPageChanging(self, event):
+    def page_change(self, event):
         old = event.GetOldSelection()
         new = event.GetSelection()
         sel = self.GetSelection()
