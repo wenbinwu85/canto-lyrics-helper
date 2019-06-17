@@ -8,11 +8,11 @@ from bs4 import BeautifulSoup
 
 class Corpus:
     def __init__(self):
-        self.characters = self._load('./dicts/characters.json')
-        self.homophones = self._load('./dicts/homophones.json')
-        self.words = self._load('./dicts/words.txt')
-        self.idioms1 = self._load('./dicts/idiom.txt')
-        self.idioms2 = self._load('./dicts/idiom2.txt')
+        self._characters = self._load('./dicts/characters.json')
+        self._homophones = self._load('./dicts/homophones.json')
+        self._words = self._load('./dicts/words.txt')
+        self._idioms1 = self._load('./dicts/idiom.txt')
+        self._idioms2 = self._load('./dicts/idiom2.txt')
 
     def _load(self, filename):
         if '.' not in filename:
@@ -30,6 +30,13 @@ class Corpus:
                 return json.load(filein)
             if filename.endswith('.txt'):
                 return filein.readlines()
+
+    def search(self, query):
+        return [word.strip('\n') for word in self._words if query in word]
+
+    def search_idioms(self, query):
+        return [idiom.strip('\n') for idiom in self._idioms1 if query in idiom]
+
 
     def get_char(self, char):
         return self.characters.get(char, None)
@@ -141,25 +148,6 @@ class Mojim:
     def __init__(self, artist='', song=''):
         self._artist = artist
         self._song = song
-        self._lang = 0
-
-    def _make_soup(self, url):
-        resp = requests.get(url).text
-        soup = BeautifulSoup(resp, 'html5lib')
-        return soup
-
-    def _clean(self, lyrics):
-        cleaned = ''
-        lyrics = [str(line) for line in lyrics.contents]
-        for i in lyrics:
-            if 'br' in i:
-                i = '\n'
-            if '[' in i or ':' in i or '：' in i or '<' in i or 'Mojim' in i:
-                continue
-            if self.artist in i or self.song in i:
-                continue
-            cleaned += i
-        return cleaned.strip()
 
     @property
     def artist(self):
@@ -177,39 +165,50 @@ class Mojim:
     def song(self, song):
         self._song = song
 
-    @property
-    def lang(self):
-        return self._lang
-    
-    @lang.setter
-    def lang(self, lang):
-        self._lang = lang
+    def _make_soup(self, url):
+        resp = requests.get(url).text
+        soup = BeautifulSoup(resp, 'html5lib')
+        return soup
 
-    def save(self, artist=None, song=None):
-        if not artist and not song:
-            artist = self.artist
-            song = self.song
-        else:
-            self.artist = artist
-            self.song = song
-        tag = 't3' if self.lang else 'g3'
-        soup = self._make_soup(f'https://mojim.com/{song}.html?{tag}')
+    def _find_lyrics(self, url):
+        soup = self._make_soup(url)
         spans = soup.findAll('span', {'class': 'mxsh_ss4'})
         pattern = re.compile(r'(.*?) ')
         url = ''
         for s in spans:
             link = s.find('a', {'title': pattern})
             if link:
-                if artist in link.get('title'):
+                if self.artist in link.get('title'):
                     url = link.get('href')
         soup = self._make_soup(f'http://mojim.com{url}')
-        lyrics = soup.find('dl', {'id': 'fsZx1'})
+        return soup.find('dl', {'id': 'fsZx1'})
+
+    def _clean(self, lyrics):
+        cleaned = ''
+        lyrics = [str(line) for line in lyrics.contents]
+        for i in lyrics:
+            if 'br' in i:
+                i = '\n'
+            if '[' in i or ':' in i or '：' in i or '<' in i or 'Mojim' in i:
+                continue
+            if self.artist in i or self.song in i:
+                continue
+            cleaned += i
+        return cleaned.strip()
+
+    def save(self, artist=None, song=None):
+        self.artist = artist
+        self.song = song
+        simplified_url = f'https://mojim.com/{song}.html?g3'
+        traditional_url = f'https://mojim.com/{song}.html?t3'
+        lyrics = self._find_lyrics(simplified_url) or self._find_lyrics(traditional_url)
         if not lyrics:
-            return False
+            return None
         lyrics = self._clean(lyrics)
         with open(f'{artist} - {song}.txt', 'w', encoding='utf-8') as fout:
             fout.write(lyrics)
-        return True
+        return lyrics
+
 
     # def archive(self, artist_page):
     #     if not os.path.exists('lyrics'):
